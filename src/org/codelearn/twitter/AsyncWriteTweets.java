@@ -1,4 +1,4 @@
-package org.codelearn.twitter.models;
+package org.codelearn.twitter;
 
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
@@ -9,6 +9,7 @@ import java.util.List;
 import javax.xml.transform.Result;
 
 import org.codelearn.twitter.TweetListActivity;
+import org.codelearn.twitter.models.Tweet;
 
 import android.content.Context;
 import android.os.AsyncTask;
