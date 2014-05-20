@@ -1,4 +1,4 @@
-package org.codelearn.twitter.models;
+package org.codelearn.twitter;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -14,6 +14,7 @@ import org.codelearn.twitter.TweetListActivity;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
+import org.codelearn.twitter.models.Tweet;
 
 public class AsyncFetchTweets extends AsyncTask<Void,Void, List<Tweet>> {
 	 private List<Tweet> tweets = new ArrayList<Tweet>();
