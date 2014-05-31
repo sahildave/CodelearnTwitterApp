@@ -148,11 +148,7 @@ public class TweetListActivity extends ListActivity {
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    if (item.getItemId() == R.id.action_compose) {
-      Intent composeIntent = new Intent(this, ComposeTweetActivity.class);
-      startActivity(composeIntent);
-      return true;
-    } else if (item.getItemId() == R.id.action_refresh) {
+   if (item.getItemId() == R.id.action_refresh) {
       getLatestTweets();
     }
     return super.onOptionsItemSelected(item);
