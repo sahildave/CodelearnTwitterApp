@@ -90,8 +90,9 @@ public class TweetListActivity extends ListActivity {
    * @param additionalTweetList a List of Tweet objects that are to be added to the ListView.
    */
   public void renderTweets(List<Tweet> additionalTweetList) {
-    for (Tweet tweet : additionalTweetList) {
-      _tweetList.add(0, tweet);
+	  
+    for (int i = additionalTweetList.size() - 1; i >= 0; i--) {
+      _tweetList.add(0, additionalTweetList.get(i));
     }
     _tweetAdapter.notifyDataSetChanged();
   }
