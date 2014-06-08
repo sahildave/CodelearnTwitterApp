@@ -130,9 +130,9 @@ public class TweetListActivity extends ListActivity {
     if (additionalTweetList == null) {
       return;
     }
-    for (Status tweet : additionalTweetList) {
-      _tweetList.add(tweet);
-    }
+    //for (Status tweet : additionalTweetList) {
+      _tweetList.addAll(0, additionalTweetList);
+    //}
 
     _tweetAdapter.notifyDataSetChanged();
   }
