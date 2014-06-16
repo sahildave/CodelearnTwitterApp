@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,17 +25,13 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 /*
- * 
- * This lesson HTTP POST and GET with JSON.
- * Used - HttpUrlConnection, Async, Json.
- * The POST method sends JSON object as paramaters.
- * A Json array is received which contains a username.
- * Finally, same toast is shown..
- * 
+ * Get Token from server by sending the username password
+ * Save it in sharedprefs.
+ * This token would be used by AsyncFetchTweets
  */
 public class MainActivity extends Activity {
 
-	String codelearnUrl = ""; // TODO: Add this
+	String codelearnUrl = ""; // TODO: New Url which should give a token
 	Button _loginBtn;
 	String passwordString;
 	String usernameString;
@@ -127,8 +124,8 @@ public class MainActivity extends Activity {
 				br.close();
 
 				JSONObject json = new JSONObject(sb.toString());
-				responseString = (String) json.get("username");
-				// Get username but from JSON
+				responseString = (String) json.get("token");
+				// Get token but from JSON
 
 				return true; // True if no exception occured
 
@@ -152,6 +149,11 @@ public class MainActivity extends Activity {
 
 				Toast.makeText(MainActivity.this, responseString,
 						Toast.LENGTH_LONG).show();
+				SharedPreferences aPrefs = getSharedPreferences(
+						"codelearn_twitter", MODE_PRIVATE);
+				Editor edit = aPrefs.edit();
+				edit.putString("token", responseString);
+				edit.commit();
 
 			} else {
 				Toast.makeText(MainActivity.this,
