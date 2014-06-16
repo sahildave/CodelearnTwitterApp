@@ -8,6 +8,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,15 +23,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-
 /*
  * 
- * This lesson deals with basic HTTP POST and GET.
- * Used - HttpUrlConnection, Async, no Json.
- * When Login button is clicked the username is saved as @usernameString
- * A post request is generated and the usernameString is sent as the parameter
- * The user gets back "Hello <usernameString>" as the response, which is 
- * shown as a Toast. If any exception is caught, different Toast message appears
+ * This lesson HTTP POST and GET with JSON.
+ * Used - HttpUrlConnection, Async, Json.
+ * The POST method sends JSON object as paramaters.
+ * A Json array is received which contains a username.
+ * Finally, same toast is shown..
  * 
  */
 public class MainActivity extends Activity {
@@ -64,17 +65,6 @@ public class MainActivity extends Activity {
 				Log.d("User", username.getText().toString());
 				Log.d("Pass", password.getText().toString());
 
-				// SharedPreferences prefs = getSharedPreferences(
-				// "codelearn_twitter", MODE_PRIVATE);
-				// Editor edit = prefs.edit();
-				// edit.putString("user", username.getText().toString());
-				// edit.putString("pass", password.getText().toString());
-				//
-				// edit.commit();
-				// Intent intent = new Intent(MainActivity.this,
-				// TweetListActivity.class);
-				// startActivity(intent);
-
 				usernameString = username.getText().toString();
 				passwordString = username.getText().toString();
 
@@ -105,14 +95,23 @@ public class MainActivity extends Activity {
 
 				HttpURLConnection con = (HttpURLConnection) url
 						.openConnection();
+				con.setRequestMethod("POST"); // TODO: Add in Lesson52 too
+
+				// We are now sending and receiving JSON
+				con.setRequestProperty("Content-Type", "application/json");
+				con.setRequestProperty("Accept", "application/json");
 				con.setDoOutput(true);
 				con.setDoInput(true);
 
-				con.setDoOutput(true);
+				JSONObject cred = new JSONObject();
+				cred.put("username", usernameString);
+				cred.put("password", passwordString);
+
 				DataOutputStream wr = new DataOutputStream(
 						con.getOutputStream());
-				wr.writeBytes(usernameString); // Setting parameters as the
-												// username
+
+				// Now sending the JSON object as parameters
+				wr.writeBytes(cred.toString());
 				wr.flush();
 				wr.close();
 
@@ -125,8 +124,11 @@ public class MainActivity extends Activity {
 					sb.append(line + "\n");
 				}
 
-				responseString = sb.toString();
 				br.close();
+
+				JSONObject json = new JSONObject(sb.toString());
+				responseString = (String) json.get("username");
+				// Get username but from JSON
 
 				return true; // True if no exception occured
 
@@ -134,6 +136,9 @@ public class MainActivity extends Activity {
 				e.printStackTrace();
 				return false;
 			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			} catch (JSONException e) {
 				e.printStackTrace();
 				return false;
 			}
