@@ -11,6 +11,7 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -42,10 +43,13 @@ public class TweetListActivity extends ListActivity {
 		// initialize the adapter with the read tweets
 		tweetItemArrayAdapter = new TweetAdapter(this, tweetsRead);
 		setListAdapter(tweetItemArrayAdapter);
+		refreshlist();
 
-		AsyncFetchTweets asyc = new AsyncFetchTweets(this);
-		asyc.execute();
+	}
 
+	public void refreshlist() {
+		AsyncFetchTweets asnyc = new AsyncFetchTweets(this);
+		asnyc.execute();
 	}
 
 	// This replaces the previous list by reinitializing the adapter.
@@ -62,6 +66,18 @@ public class TweetListActivity extends ListActivity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.tweet_list, menu);
 		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int id = item.getItemId();
+		if (id == R.id.action_refresh) {
+			// sign in button pressed
+			refreshlist();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+
 	}
 
 	@Override
