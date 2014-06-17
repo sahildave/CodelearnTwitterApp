@@ -52,7 +52,7 @@ public class TweetListActivity extends ListActivity {
 		asnyc.execute();
 	}
 
-	// This replaces the previous list by reinitializing the adapter.
+	// This adds new list to the top of the adapter.
 	public void renderTweets(List<Tweet> tweets) {
 		tweetsRead.addAll(0, tweets);
 		tweetItemArrayAdapter.notifyDataSetChanged();
@@ -83,6 +83,7 @@ public class TweetListActivity extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		Intent intent = new Intent(this, TweetDetailActivity.class);
+		intent.putExtra("MyClass", (Tweet) getListAdapter().getItem(position));
 
 		startActivity(intent);
 
