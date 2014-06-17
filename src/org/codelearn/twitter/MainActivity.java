@@ -1,18 +1,16 @@
 package org.codelearn.twitter;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
@@ -99,68 +97,76 @@ public class MainActivity extends Activity {
 
 			/*
 			 * HttpUrlConnection
-			 * 
-			 * 
-			 * try { URL url = new URL(codelearnUrl);
-			 * 
-			 * HttpURLConnection con = (HttpURLConnection) url
-			 * .openConnection(); con.setDoOutput(true); con.setDoInput(true);
-			 * 
-			 * con.setDoOutput(true); DataOutputStream wr = new
-			 * DataOutputStream( con.getOutputStream());
-			 * wr.writeBytes(usernameString); // Setting parameters as the //
-			 * username wr.flush(); wr.close();
-			 * 
-			 * BufferedReader br = new BufferedReader(new InputStreamReader(
-			 * con.getInputStream())); String line; StringBuffer sb = new
-			 * StringBuffer();
-			 * 
-			 * while ((line = br.readLine()) != null) { sb.append(line + "\n");
-			 * }
-			 * 
-			 * responseString = sb.toString(); br.close();
-			 * 
-			 * return true; // True if no exception occured
-			 * 
-			 * } catch (MalformedURLException e) { e.printStackTrace(); return
-			 * false; } catch (IOException e) { e.printStackTrace(); return
-			 * false; }
-			 */
-
-			/*
-			 * DefaultHttpClient
 			 */
 			try {
-				HttpClient client = new DefaultHttpClient();
-				HttpPost post = new HttpPost(codelearnUrl);
+				URL url = new URL(codelearnUrl);
 
-				List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
-				urlParameters.add(new BasicNameValuePair("username",
-						usernameString));
-				post.setEntity(new UrlEncodedFormEntity(urlParameters));
+				HttpURLConnection con = (HttpURLConnection) url
+						.openConnection();
+				con.setDoOutput(true);
+				con.setDoInput(true);
 
-				HttpResponse response = client.execute(post);
+				con.setDoOutput(true);
+				DataOutputStream wr = new DataOutputStream(
+						con.getOutputStream());
 
-				StringBuilder sb = new StringBuilder();
+				String parameters = "username=" + usernameString;
+
+				wr.writeBytes(parameters); // Setting parameters as the
+											// username
+				wr.flush();
+				wr.close();
+
 				BufferedReader br = new BufferedReader(new InputStreamReader(
-						response.getEntity().getContent()));
-
-				String line = null;
+						con.getInputStream()));
+				String line;
+				StringBuffer sb = new StringBuffer();
 
 				while ((line = br.readLine()) != null) {
 					sb.append(line + "\n");
 				}
+
 				responseString = sb.toString();
 				br.close();
+
 				return true; // True if no exception occured
 
-			} catch (ClientProtocolException e) {
+			} catch (MalformedURLException e) {
 				e.printStackTrace();
 				return false;
 			} catch (IOException e) {
 				e.printStackTrace();
 				return false;
 			}
+
+			/*
+			 * DefaultHttpClient
+			 */
+			/*
+			 * try { HttpClient client = new DefaultHttpClient(); HttpPost post
+			 * = new HttpPost(codelearnUrl);
+			 * 
+			 * List<NameValuePair> urlParameters = new
+			 * ArrayList<NameValuePair>(); urlParameters.add(new
+			 * BasicNameValuePair("username", usernameString));
+			 * post.setEntity(new UrlEncodedFormEntity(urlParameters));
+			 * 
+			 * HttpResponse response = client.execute(post);
+			 * 
+			 * StringBuilder sb = new StringBuilder(); BufferedReader br = new
+			 * BufferedReader(new InputStreamReader(
+			 * response.getEntity().getContent()));
+			 * 
+			 * String line = null;
+			 * 
+			 * while ((line = br.readLine()) != null) { sb.append(line + "\n");
+			 * } responseString = sb.toString(); br.close(); return true; //
+			 * True if no exception occured
+			 * 
+			 * } catch (ClientProtocolException e) { e.printStackTrace(); return
+			 * false; } catch (IOException e) { e.printStackTrace(); return
+			 * false; }
+			 */
 
 		}
 
