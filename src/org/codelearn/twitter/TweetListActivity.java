@@ -1,7 +1,7 @@
 package org.codelearn.twitter;
 
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,58 +10,45 @@ import org.codelearn.twitter.models.Tweet;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class TweetListActivity extends ListActivity {
 
-	private TweetAdapter tweetItemArrayAdapter;
-	private List<Tweet> tweets = new ArrayList<Tweet>();
+	private ArrayAdapter tweetItemArrayAdapter;
+	// private List<Tweet> tweets = new ArrayList<Tweet>();
+	private List<Tweet> tweetsRead = new ArrayList<Tweet>();
 	private static final String TWEETS_CACHE_FILE = "tweet_cache.ser";
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_tweet_list);
 
-		for (int i = 0; i < 20; i++) {
-			Tweet tweet = new Tweet();
-			tweet.setTitle("A nice header for Tweet # " + i);
-			tweet.setBody("Some random body text for the tweet # " + i);
-			tweets.add(tweet);
-		}
-
-		FileOutputStream fos = null;
-		ObjectOutputStream oos = null;
-
 		try {
-			fos = openFileOutput(TWEETS_CACHE_FILE, MODE_PRIVATE);
-			oos = new ObjectOutputStream(fos);
-			oos.writeObject(tweets);
-			Log.d("codelearn", "Successfully wrote tweets to the file.");
+			FileInputStream fis = openFileInput(TWEETS_CACHE_FILE);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			tweetsRead = (List<Tweet>) ois.readObject();
+			// TODO: Is this needed?
 		} catch (Exception e) {
-
-			Log.e("codelearn", "Failed to write to serialised file.", e);
-
-		} finally {
-
-			try {
-				fos.close();
-			} catch (Exception e) {
-				Log.e("codelearn", "Error closing file stream", e);
-			}
-
-			try {
-				oos.close();
-			} catch (Exception e) {
-				Log.e("codelearn", "Error closing output stream", e);
-			}
+			e.printStackTrace();
 		}
 
+		// renderTweets(tweetsRead);
+
+		renderTweets(tweetsRead);
+		AsyncFetchTweets asyc = new AsyncFetchTweets(this);
+		asyc.execute();
+
+	}
+
+	public void renderTweets(List<Tweet> tweets) {
 		tweetItemArrayAdapter = new TweetAdapter(this, tweets);
 		setListAdapter(tweetItemArrayAdapter);
+
 	}
 
 	@Override
@@ -74,6 +61,9 @@ public class TweetListActivity extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		Intent intent = new Intent(this, TweetDetailActivity.class);
+		intent.putExtra("MyClass", (Tweet) getListAdapter().getItem(position));
+
 		startActivity(intent);
+
 	}
 }
