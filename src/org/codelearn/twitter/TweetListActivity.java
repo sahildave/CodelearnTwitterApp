@@ -18,7 +18,7 @@ import android.widget.ListView;
 public class TweetListActivity extends ListActivity {
 
 	private TweetAdapter tweetItemArrayAdapter;
-	private List<Tweet> tweets = new ArrayList<Tweet>();
+	// private List<Tweet> tweets = new ArrayList<Tweet>();
 	private List<Tweet> tweetsRead = new ArrayList<Tweet>();
 	private static final String TWEETS_CACHE_FILE = "tweet_cache.ser";
 	private static final long serialVersionUID = 1L;
@@ -28,16 +28,7 @@ public class TweetListActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_tweet_list);
 
-		for (int i = 0; i < 30; i++) {
-			Tweet tweet = new Tweet();
-			tweet.setTitle("A nice header for Tweet # " + i);
-			tweet.setBody("Some random body text for the tweet # " + i);
-			tweets.add(tweet);
-		}
-
-		try
-
-		{
+		try {
 			FileInputStream fis = openFileInput(TWEETS_CACHE_FILE);
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			tweetsRead = (List<Tweet>) ois.readObject();
@@ -46,7 +37,12 @@ public class TweetListActivity extends ListActivity {
 
 		}
 
-		renderTweets(tweetsRead);
+		// renderTweets(tweetsRead);
+
+		// initialize the adapter with the read tweets
+		tweetItemArrayAdapter = new TweetAdapter(this, tweetsRead);
+		setListAdapter(tweetItemArrayAdapter);
+
 		AsyncFetchTweets asyc = new AsyncFetchTweets(this);
 		asyc.execute();
 
@@ -54,9 +50,11 @@ public class TweetListActivity extends ListActivity {
 
 	// This replaces the previous list by reinitializing the adapter.
 	public void renderTweets(List<Tweet> tweets) {
-		tweetItemArrayAdapter = new TweetAdapter(this, tweets);
-		setListAdapter(tweetItemArrayAdapter);
+		tweetsRead.addAll(0, tweets);
+		tweetItemArrayAdapter.notifyDataSetChanged();
 
+		AsyncWriteTweets test1 = new AsyncWriteTweets(this);
+		test1.execute(tweetsRead);
 	}
 
 	@Override

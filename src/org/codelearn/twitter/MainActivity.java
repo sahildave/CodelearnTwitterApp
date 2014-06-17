@@ -25,9 +25,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 /*
- * Get Token from server by sending the username password
- * Save it in sharedprefs.
- * This token would be used by AsyncFetchTweets
+ * Include a new menu item which has a refresh icon
+ * Changes would be done in asyncFetch task and the listactivity
+ * where new items would be added to the top without overwriting
+ * unlike the last lesson.
+ * new items would also be added to cache
  */
 public class MainActivity extends Activity {
 
