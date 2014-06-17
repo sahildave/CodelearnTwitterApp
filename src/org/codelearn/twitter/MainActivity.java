@@ -10,7 +10,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
@@ -95,6 +101,9 @@ public class MainActivity extends Activity {
 		@Override
 		protected Boolean doInBackground(Void... params) {
 
+			// Both the clients are in working condition. Comment-Uncomment to
+			// use
+
 			/*
 			 * HttpUrlConnection
 			 */
@@ -142,31 +151,39 @@ public class MainActivity extends Activity {
 			/*
 			 * DefaultHttpClient
 			 */
-			/*
-			 * try { HttpClient client = new DefaultHttpClient(); HttpPost post
-			 * = new HttpPost(codelearnUrl);
-			 * 
-			 * List<NameValuePair> urlParameters = new
-			 * ArrayList<NameValuePair>(); urlParameters.add(new
-			 * BasicNameValuePair("username", usernameString));
-			 * post.setEntity(new UrlEncodedFormEntity(urlParameters));
-			 * 
-			 * HttpResponse response = client.execute(post);
-			 * 
-			 * StringBuilder sb = new StringBuilder(); BufferedReader br = new
-			 * BufferedReader(new InputStreamReader(
-			 * response.getEntity().getContent()));
-			 * 
-			 * String line = null;
-			 * 
-			 * while ((line = br.readLine()) != null) { sb.append(line + "\n");
-			 * } responseString = sb.toString(); br.close(); return true; //
-			 * True if no exception occured
-			 * 
-			 * } catch (ClientProtocolException e) { e.printStackTrace(); return
-			 * false; } catch (IOException e) { e.printStackTrace(); return
-			 * false; }
-			 */
+
+			// try {
+			// HttpClient client = new DefaultHttpClient();
+			// HttpPost post = new HttpPost(codelearnUrl);
+			//
+			// List<NameValuePair> urlParameters = new
+			// ArrayList<NameValuePair>();
+			// urlParameters.add(new BasicNameValuePair("username",
+			// usernameString));
+			// post.setEntity(new UrlEncodedFormEntity(urlParameters));
+			//
+			// HttpResponse response = client.execute(post);
+			//
+			// StringBuilder sb = new StringBuilder();
+			// BufferedReader br = new BufferedReader(new InputStreamReader(
+			// response.getEntity().getContent()));
+			//
+			// String line = null;
+			//
+			// while ((line = br.readLine()) != null) {
+			// sb.append(line + "\n");
+			// }
+			// responseString = sb.toString();
+			// br.close();
+			// return true;
+			//
+			// } catch (ClientProtocolException e) {
+			// e.printStackTrace();
+			// return false;
+			// } catch (IOException e) {
+			// e.printStackTrace();
+			// return false;
+			// }
 
 		}
 
