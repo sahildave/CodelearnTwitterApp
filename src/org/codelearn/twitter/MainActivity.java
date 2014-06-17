@@ -25,11 +25,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 /*
- * Include a new menu item which has a refresh icon
- * Changes would be done in asyncFetch task and the listactivity
- * where new items would be added to the top without overwriting
- * unlike the last lesson.
- * new items would also be added to cache
+ * Adding "Compose Tweet" icon on menu in both list and detail activity.
+ * Opens composeTweetActivity, sends tweet with POST, gets a response
+ * saying "Tweet Submitted". Displayed in Toast
  */
 
 public class MainActivity extends Activity {

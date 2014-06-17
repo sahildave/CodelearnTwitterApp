@@ -76,6 +76,12 @@ public class TweetListActivity extends ListActivity {
 			refreshlist();
 			return true;
 		}
+
+		if (id == R.id.action_compose) {
+			Intent composeIntent = new Intent(this, ComposeTweetActivity.class);
+			startActivity(composeIntent);
+			return true;
+		}
 		return super.onOptionsItemSelected(item);
 
 	}
