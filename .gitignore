@@ -1,4 +1,4 @@
-**/bin/*.*
+/bin
 result.log
 /eclipse-plugin/.classpath
 /twitter-app-validation/.classpath

@@ -1,9 +1,12 @@
 package org.codelearn.twitter;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -57,6 +60,7 @@ public class MainActivity extends Activity {
 			Intent intent = new Intent(MainActivity.this,
 					TweetListActivity.class);
 			startActivity(intent);
+			finish();
 		}
 
 		_loginBtn.setOnClickListener(new View.OnClickListener() {
@@ -90,74 +94,39 @@ public class MainActivity extends Activity {
 	private class MyAsyncTask extends AsyncTask<Void, Void, Boolean> {
 
 		String responseString;
-		String tokenValue;
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
 
-			/*
-			 * try { URL url = new URL(codelearnUrl);
-			 * 
-			 * HttpURLConnection con = (HttpURLConnection) url
-			 * .openConnection(); con.setRequestMethod("POST"); // TODO: Add in
-			 * Lesson52 too
-			 * 
-			 * // We are now sending and receiving JSON
-			 * con.setRequestProperty("Content-Type", "application/json");
-			 * con.setRequestProperty("Accept", "application/json");
-			 * con.setDoOutput(true); con.setDoInput(true);
-			 * 
-			 * JSONObject cred = new JSONObject(); cred.put("username",
-			 * usernameString); cred.put("password", passwordString);
-			 * 
-			 * DataOutputStream wr = new DataOutputStream(
-			 * con.getOutputStream());
-			 * 
-			 * // Now sending the JSON object as parameters
-			 * wr.writeBytes(cred.toString()); wr.flush(); wr.close();
-			 * 
-			 * BufferedReader br = new BufferedReader(new InputStreamReader(
-			 * con.getInputStream())); String line; StringBuffer sb = new
-			 * StringBuffer();
-			 * 
-			 * while ((line = br.readLine()) != null) { sb.append(line + "\n");
-			 * }
-			 * 
-			 * br.close();
-			 * 
-			 * JSONObject json = new JSONObject(sb.toString()); responseString =
-			 * (String) json.get("username"); // Get username but from JSON
-			 * 
-			 * return true; // True if no exception occured
-			 * 
-			 * } catch (MalformedURLException e) { e.printStackTrace(); return
-			 * false; } catch (IOException e) { e.printStackTrace(); return
-			 * false; } catch (JSONException e) { e.printStackTrace(); return
-			 * false; }
-			 */
-
 			try {
-				HttpClient client = new DefaultHttpClient();
-				HttpPost post = new HttpPost(codelearnUrl);
+				URL url = new URL(codelearnUrl);
 
-				post.setHeader("Content-type", "application/json");
-				post.setHeader("Accept", "application/json");
+				HttpURLConnection con = (HttpURLConnection) url
+						.openConnection();
+				con.setRequestMethod("POST");
+
+				// We are now sending and receiving JSON
+				con.setRequestProperty("Content-Type", "application/json");
+				con.setRequestProperty("Accept", "application/json");
+				con.setDoOutput(true);
+				con.setDoInput(true);
 
 				JSONObject cred = new JSONObject();
 				cred.put("username", usernameString);
 				cred.put("password", passwordString);
 
-				StringEntity se = new StringEntity(cred.toString());
-				post.setEntity(se);
+				DataOutputStream wr = new DataOutputStream(
+						con.getOutputStream());
 
-				HttpResponse response = client.execute(post);
+				// Now sending the JSON object as parameters
+				wr.writeBytes(cred.toString());
+				wr.flush();
+				wr.close();
 
-				// GET
-				StringBuilder sb = new StringBuilder();
 				BufferedReader br = new BufferedReader(new InputStreamReader(
-						response.getEntity().getContent()));
-
-				String line = null;
+						con.getInputStream()));
+				String line;
+				StringBuffer sb = new StringBuffer();
 
 				while ((line = br.readLine()) != null) {
 					sb.append(line + "\n");
@@ -166,9 +135,9 @@ public class MainActivity extends Activity {
 				br.close();
 
 				JSONObject json = new JSONObject(sb.toString());
-				tokenValue = (String) json.get("token");
+				responseString = (String) json.get("token");
 
-				return true;
+				return true; // True if no exception occured
 
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
@@ -180,6 +149,55 @@ public class MainActivity extends Activity {
 				e.printStackTrace();
 				return false;
 			}
+
+			/*
+			 * DefaultHttpClient
+			 */
+
+			// try {
+			// HttpClient client = new DefaultHttpClient();
+			// HttpPost post = new HttpPost(codelearnUrl);
+			//
+			// post.setHeader("Content-type", "application/json");
+			// post.setHeader("Accept", "application/json");
+			//
+			// JSONObject cred = new JSONObject();
+			// cred.put("username", usernameString);
+			// cred.put("password", passwordString);
+			//
+			// StringEntity se = new StringEntity(cred.toString());
+			// post.setEntity(se);
+			//
+			// HttpResponse response = client.execute(post);
+			//
+			// // GET
+			// StringBuilder sb = new StringBuilder();
+			// BufferedReader br = new BufferedReader(new InputStreamReader(
+			// response.getEntity().getContent()));
+			//
+			// String line = null;
+			//
+			// while ((line = br.readLine()) != null) {
+			// sb.append(line + "\n");
+			// }
+			//
+			// br.close();
+			//
+			// JSONObject json = new JSONObject(sb.toString());
+			// tokenValue = (String) json.get("token");
+			//
+			// return true;
+			//
+			// } catch (MalformedURLException e) {
+			// e.printStackTrace();
+			// return false;
+			// } catch (IOException e) {
+			// e.printStackTrace();
+			// return false;
+			// } catch (JSONException e) {
+			// e.printStackTrace();
+			// return false;
+			// }
 		}
 
 		@Override
@@ -188,18 +206,24 @@ public class MainActivity extends Activity {
 
 			if (result) { // if no exception occured
 
-				Toast.makeText(MainActivity.this, tokenValue, Toast.LENGTH_LONG)
-						.show();
+				// Toast.makeText(MainActivity.this, tokenValue,
+				// Toast.LENGTH_LONG)
+				// .show();
 
 				SharedPreferences prefs = getSharedPreferences(
 						"codelearn_twitter", MODE_PRIVATE);
 
 				Editor edit = prefs.edit();
 
-				edit.putString("token", tokenValue);
+				edit.putString("token", responseString);
 				edit.putString("username", usernameString);
 				edit.putString("password", passwordString);
 				edit.commit();
+
+				Intent intent = new Intent(MainActivity.this,
+						TweetListActivity.class);
+				startActivity(intent);
+				finish();
 
 			} else {
 				Toast.makeText(MainActivity.this,
