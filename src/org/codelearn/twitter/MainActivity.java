@@ -27,7 +27,10 @@ import android.widget.Toast;
 /*
  * Get Token from server by sending the username password
  * Save it in sharedprefs.
- * This token would be used by AsyncFetchTweets
+ * This token would be used by AsyncFetchTweets.
+ * 
+ * Moved write task from AsyncFetchTweets to TweetListActivity
+ * after the list is displayed
  */
 public class MainActivity extends Activity {
 

@@ -57,6 +57,9 @@ public class TweetListActivity extends ListActivity {
 		tweetItemArrayAdapter = new TweetAdapter(this, tweets);
 		setListAdapter(tweetItemArrayAdapter);
 
+		AsyncWriteTweets test1 = new AsyncWriteTweets(this);
+		test1.execute(tweets);
+
 	}
 
 	@Override
@@ -69,6 +72,7 @@ public class TweetListActivity extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		Intent intent = new Intent(this, TweetDetailActivity.class);
+		intent.putExtra("MyClass", (Tweet) getListAdapter().getItem(position));
 
 		startActivity(intent);
 
