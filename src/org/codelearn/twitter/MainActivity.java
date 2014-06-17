@@ -39,7 +39,9 @@ import android.widget.Toast;
  */
 public class MainActivity extends Activity {
 
-	String codelearnUrl = ""; // TODO: Add this
+	String codelearnUrl = "http://app-dev-challenge-endpoint.herokuapp.com/loginstring"; // TODO:
+																							// Add
+																							// this
 	Button _loginBtn;
 	String passwordString;
 	String usernameString;
