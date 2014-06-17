@@ -20,7 +20,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-
 /*
  * 
  * This lesson deals with basic HTTP POST and GET.
@@ -63,17 +62,6 @@ public class MainActivity extends Activity {
 
 				Log.d("User", username.getText().toString());
 				Log.d("Pass", password.getText().toString());
-
-				// SharedPreferences prefs = getSharedPreferences(
-				// "codelearn_twitter", MODE_PRIVATE);
-				// Editor edit = prefs.edit();
-				// edit.putString("user", username.getText().toString());
-				// edit.putString("pass", password.getText().toString());
-				//
-				// edit.commit();
-				// Intent intent = new Intent(MainActivity.this,
-				// TweetListActivity.class);
-				// startActivity(intent);
 
 				usernameString = username.getText().toString();
 				passwordString = username.getText().toString();
