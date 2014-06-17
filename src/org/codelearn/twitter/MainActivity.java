@@ -1,19 +1,22 @@
 package org.codelearn.twitter;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,7 +37,9 @@ import android.widget.Toast;
  */
 public class MainActivity extends Activity {
 
-	String codelearnUrl = ""; // TODO: Add this
+	String codelearnUrl = "http://app-dev-challenge-endpoint.herokuapp.com/login"; // TODO:
+																					// Add
+																					// this
 	Button _loginBtn;
 	String passwordString;
 	String usernameString;
@@ -47,9 +52,8 @@ public class MainActivity extends Activity {
 		SharedPreferences prefs = getSharedPreferences("codelearn_twitter",
 				MODE_PRIVATE);
 
-		String s = prefs.getString("user", null);
-		String s1 = prefs.getString("pass", null);
-		if (s != null && s1 != null) { // TODO: Check this
+		String s = prefs.getString("token", null);
+		if (s != null) { // TODO: Check this
 			Intent intent = new Intent(MainActivity.this,
 					TweetListActivity.class);
 			startActivity(intent);
@@ -86,39 +90,74 @@ public class MainActivity extends Activity {
 	private class MyAsyncTask extends AsyncTask<Void, Void, Boolean> {
 
 		String responseString;
+		String tokenValue;
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
 
+			/*
+			 * try { URL url = new URL(codelearnUrl);
+			 * 
+			 * HttpURLConnection con = (HttpURLConnection) url
+			 * .openConnection(); con.setRequestMethod("POST"); // TODO: Add in
+			 * Lesson52 too
+			 * 
+			 * // We are now sending and receiving JSON
+			 * con.setRequestProperty("Content-Type", "application/json");
+			 * con.setRequestProperty("Accept", "application/json");
+			 * con.setDoOutput(true); con.setDoInput(true);
+			 * 
+			 * JSONObject cred = new JSONObject(); cred.put("username",
+			 * usernameString); cred.put("password", passwordString);
+			 * 
+			 * DataOutputStream wr = new DataOutputStream(
+			 * con.getOutputStream());
+			 * 
+			 * // Now sending the JSON object as parameters
+			 * wr.writeBytes(cred.toString()); wr.flush(); wr.close();
+			 * 
+			 * BufferedReader br = new BufferedReader(new InputStreamReader(
+			 * con.getInputStream())); String line; StringBuffer sb = new
+			 * StringBuffer();
+			 * 
+			 * while ((line = br.readLine()) != null) { sb.append(line + "\n");
+			 * }
+			 * 
+			 * br.close();
+			 * 
+			 * JSONObject json = new JSONObject(sb.toString()); responseString =
+			 * (String) json.get("username"); // Get username but from JSON
+			 * 
+			 * return true; // True if no exception occured
+			 * 
+			 * } catch (MalformedURLException e) { e.printStackTrace(); return
+			 * false; } catch (IOException e) { e.printStackTrace(); return
+			 * false; } catch (JSONException e) { e.printStackTrace(); return
+			 * false; }
+			 */
+
 			try {
-				URL url = new URL(codelearnUrl);
+				HttpClient client = new DefaultHttpClient();
+				HttpPost post = new HttpPost(codelearnUrl);
 
-				HttpURLConnection con = (HttpURLConnection) url
-						.openConnection();
-				con.setRequestMethod("POST"); // TODO: Add in Lesson52 too
-
-				// We are now sending and receiving JSON
-				con.setRequestProperty("Content-Type", "application/json");
-				con.setRequestProperty("Accept", "application/json");
-				con.setDoOutput(true);
-				con.setDoInput(true);
+				post.setHeader("Content-type", "application/json");
+				post.setHeader("Accept", "application/json");
 
 				JSONObject cred = new JSONObject();
 				cred.put("username", usernameString);
 				cred.put("password", passwordString);
 
-				DataOutputStream wr = new DataOutputStream(
-						con.getOutputStream());
+				StringEntity se = new StringEntity(cred.toString());
+				post.setEntity(se);
 
-				// Now sending the JSON object as parameters
-				wr.writeBytes(cred.toString());
-				wr.flush();
-				wr.close();
+				HttpResponse response = client.execute(post);
 
+				// GET
+				StringBuilder sb = new StringBuilder();
 				BufferedReader br = new BufferedReader(new InputStreamReader(
-						con.getInputStream()));
-				String line;
-				StringBuffer sb = new StringBuffer();
+						response.getEntity().getContent()));
+
+				String line = null;
 
 				while ((line = br.readLine()) != null) {
 					sb.append(line + "\n");
@@ -127,10 +166,9 @@ public class MainActivity extends Activity {
 				br.close();
 
 				JSONObject json = new JSONObject(sb.toString());
-				responseString = (String) json.get("username");
-				// Get username but from JSON
+				tokenValue = (String) json.get("token");
 
-				return true; // True if no exception occured
+				return true;
 
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
@@ -150,8 +188,18 @@ public class MainActivity extends Activity {
 
 			if (result) { // if no exception occured
 
-				Toast.makeText(MainActivity.this, responseString,
-						Toast.LENGTH_LONG).show();
+				Toast.makeText(MainActivity.this, tokenValue, Toast.LENGTH_LONG)
+						.show();
+
+				SharedPreferences prefs = getSharedPreferences(
+						"codelearn_twitter", MODE_PRIVATE);
+
+				Editor edit = prefs.edit();
+
+				edit.putString("token", tokenValue);
+				edit.putString("username", usernameString);
+				edit.putString("password", passwordString);
+				edit.commit();
 
 			} else {
 				Toast.makeText(MainActivity.this,
