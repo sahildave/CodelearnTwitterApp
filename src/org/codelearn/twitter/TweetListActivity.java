@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class TweetListActivity extends ListActivity {
@@ -89,6 +88,7 @@ public class TweetListActivity extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		Intent intent = new Intent(this, TweetDetailActivity.class);
+		intent.putExtra("MyClass", (Tweet) getListAdapter().getItem(position));
 
 		startActivity(intent);
 
