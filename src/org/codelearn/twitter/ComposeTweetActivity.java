@@ -26,12 +26,15 @@ public class ComposeTweetActivity extends Activity {
 	String token;
 	String tweet;
 
-	final static String sendTweetUrl = ""; // TODO: Add this
+	final static String sendTweetUrl = "http://for-sahil.herokuapp.com/tweets";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_compose_tweet);
+
+		btn_submit = (Button) findViewById(R.id.btn_submit);
+		compose = (EditText) findViewById(R.id.fld_compose);
 
 		prefs = getSharedPreferences("codelearn_twitter", MODE_PRIVATE);
 		token = prefs.getString("token", "-1");
@@ -42,6 +45,7 @@ public class ComposeTweetActivity extends Activity {
 			public void onClick(View v) {
 
 				tweet = compose.getText().toString();
+
 				if (tweet.trim().length() > 0) {
 					btn_submit.setEnabled(false);
 					new updateTwitterStatus().execute(tweet);
@@ -70,14 +74,12 @@ public class ComposeTweetActivity extends Activity {
 
 				HttpURLConnection con = (HttpURLConnection) url
 						.openConnection();
-				con.setDoOutput(true);
-				con.setDoInput(true);
+				con.setRequestMethod("POST");
 
-				con.setDoOutput(true);
+				String parameters = "tweet" + sendThisTweet;
 				DataOutputStream wr = new DataOutputStream(
 						con.getOutputStream());
-				wr.writeBytes(sendThisTweet); // Setting parameters as the
-												// tweet
+				wr.writeBytes(parameters); // Setting parameters as the tweet
 				wr.flush();
 				wr.close();
 

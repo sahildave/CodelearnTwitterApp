@@ -32,7 +32,7 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-	String codelearnUrl = ""; // TODO: New Url which should give a token
+	String codelearnUrl = "http://for-sahil.herokuapp.com/login";
 	Button _loginBtn;
 	String passwordString;
 	String usernameString;
@@ -45,12 +45,12 @@ public class MainActivity extends Activity {
 		SharedPreferences prefs = getSharedPreferences("codelearn_twitter",
 				MODE_PRIVATE);
 
-		String s = prefs.getString("user", null);
-		String s1 = prefs.getString("pass", null);
-		if (s != null && s1 != null) { // TODO: Check this
+		String s = prefs.getString("token", null);
+		if (s != null) { // TODO: Check this
 			Intent intent = new Intent(MainActivity.this,
 					TweetListActivity.class);
 			startActivity(intent);
+			finish();
 		}
 
 		_loginBtn.setOnClickListener(new View.OnClickListener() {
@@ -64,7 +64,7 @@ public class MainActivity extends Activity {
 				Log.d("Pass", password.getText().toString());
 
 				usernameString = username.getText().toString();
-				passwordString = username.getText().toString();
+				passwordString = password.getText().toString();
 
 				MyAsyncTask async = new MyAsyncTask();
 				async.execute();
@@ -93,7 +93,7 @@ public class MainActivity extends Activity {
 
 				HttpURLConnection con = (HttpURLConnection) url
 						.openConnection();
-				con.setRequestMethod("POST"); // TODO: Add in Lesson52 too
+				con.setRequestMethod("POST");
 
 				// We are now sending and receiving JSON
 				con.setRequestProperty("Content-Type", "application/json");
@@ -126,7 +126,6 @@ public class MainActivity extends Activity {
 
 				JSONObject json = new JSONObject(sb.toString());
 				responseString = (String) json.get("token");
-				// Get token but from JSON
 
 				return true; // True if no exception occured
 
@@ -140,6 +139,55 @@ public class MainActivity extends Activity {
 				e.printStackTrace();
 				return false;
 			}
+
+			/*
+			 * DefaultHttpClient
+			 */
+
+			// try {
+			// HttpClient client = new DefaultHttpClient();
+			// HttpPost post = new HttpPost(codelearnUrl);
+			//
+			// post.setHeader("Content-type", "application/json");
+			// post.setHeader("Accept", "application/json");
+			//
+			// JSONObject cred = new JSONObject();
+			// cred.put("username", usernameString);
+			// cred.put("password", passwordString);
+			//
+			// StringEntity se = new StringEntity(cred.toString());
+			// post.setEntity(se);
+			//
+			// HttpResponse response = client.execute(post);
+			//
+			// // GET
+			// StringBuilder sb = new StringBuilder();
+			// BufferedReader br = new BufferedReader(new InputStreamReader(
+			// response.getEntity().getContent()));
+			//
+			// String line = null;
+			//
+			// while ((line = br.readLine()) != null) {
+			// sb.append(line + "\n");
+			// }
+			//
+			// br.close();
+			//
+			// JSONObject json = new JSONObject(sb.toString());
+			// responseString = (String) json.get("token");
+			//
+			// return true;
+			//
+			// } catch (MalformedURLException e) {
+			// e.printStackTrace();
+			// return false;
+			// } catch (IOException e) {
+			// e.printStackTrace();
+			// return false;
+			// } catch (JSONException e) {
+			// e.printStackTrace();
+			// return false;
+			// }
 		}
 
 		@Override
@@ -150,11 +198,21 @@ public class MainActivity extends Activity {
 
 				Toast.makeText(MainActivity.this, responseString,
 						Toast.LENGTH_LONG).show();
-				SharedPreferences aPrefs = getSharedPreferences(
+
+				SharedPreferences prefs = getSharedPreferences(
 						"codelearn_twitter", MODE_PRIVATE);
-				Editor edit = aPrefs.edit();
+
+				Editor edit = prefs.edit();
+
 				edit.putString("token", responseString);
+				edit.putString("username", usernameString);
+				edit.putString("password", passwordString);
 				edit.commit();
+
+				Intent intent = new Intent(MainActivity.this,
+						TweetListActivity.class);
+				startActivity(intent);
+				finish();
 
 			} else {
 				Toast.makeText(MainActivity.this,
