@@ -43,9 +43,10 @@ import android.widget.Toast;
  */
 public class MainActivity extends Activity {
 
-	String codelearnUrl = "http://app-dev-challenge-endpoint.herokuapp.com/loginstring"; // TODO:
-																							// Add
-																							// this
+	// For Tutorials
+	String codelearnUrl = "http://app-dev-challenge-endpoint.herokuapp.com/loginstring";
+	// For Test
+	// String codelearnUrl = "http://for-sahil.herokuapp.com/loginstring"; //
 	Button _loginBtn;
 	String passwordString;
 	String usernameString;
@@ -112,10 +113,7 @@ public class MainActivity extends Activity {
 
 				HttpURLConnection con = (HttpURLConnection) url
 						.openConnection();
-				con.setDoOutput(true);
-				con.setDoInput(true);
-
-				con.setDoOutput(true);
+				con.setRequestMethod("POST");
 				DataOutputStream wr = new DataOutputStream(
 						con.getOutputStream());
 
