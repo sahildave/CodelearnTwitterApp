@@ -1,8 +1,6 @@
 package org.codelearn.twitter;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -23,7 +21,7 @@ public class AsyncFetchTweets extends AsyncTask<Void, Void, List<Tweet>> {
 	private List<Tweet> tweets = new ArrayList<Tweet>();
 	private TweetListActivity listActivity = null;
 	private JSONArray result;
-	private static final String tweetURL = "http://app-dev-challenge-endpoint.herokuapp.com/tweets";
+	private static final String tweetURL = "http://for-sahil.herokuapp.com/tweets";
 
 	public AsyncFetchTweets(TweetListActivity act) {
 		listActivity = act;
@@ -32,7 +30,6 @@ public class AsyncFetchTweets extends AsyncTask<Void, Void, List<Tweet>> {
 	@Override
 	protected List<Tweet> doInBackground(Void... params) {
 
-		InputStream stream = null;
 		try {
 
 			SharedPreferences prefs = listActivity.getSharedPreferences(
@@ -42,37 +39,25 @@ public class AsyncFetchTweets extends AsyncTask<Void, Void, List<Tweet>> {
 			URL url = new URL(tweetURL);
 
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestMethod("POST");
-			con.setDoOutput(true);
-			con.setDoInput(true);
+			con.setRequestMethod("GET");
+			con.setRequestProperty("Accept", "application/json");
 
-			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			BufferedReader br = new BufferedReader(new InputStreamReader(
+					con.getInputStream()));
+			StringBuilder content = new StringBuilder();
+			String line;
+			while ((line = br.readLine()) != null) {
+				content.append(line + "\n");
+			}
 
-			// Now sending the JSON object as parameters
-			wr.writeBytes(token);
-			wr.flush();
-			wr.close();
-
-			stream = con.getInputStream();
-			int HttpResult = con.getResponseCode();
-			if (HttpResult == HttpURLConnection.HTTP_OK) {
-				BufferedReader br = new BufferedReader(new InputStreamReader(
-						stream));
-				StringBuilder content = new StringBuilder();
-				String line = null;
-				while ((line = br.readLine()) != null) {
-					content.append(line + "\n");
-				}
-				JSONTokener tokener = new JSONTokener(content.toString());
-				result = new JSONArray(tokener);
-				br.close();
-				for (int i = 0; i < result.length(); i++) {
-					Tweet tweet = new Tweet();
-
-					tweet.setTitle(result.getJSONObject(i).getString("title"));
-					tweet.setBody(result.getJSONObject(i).getString("body"));
-					tweets.add(tweet);
-				}
+			JSONTokener tokener = new JSONTokener(content.toString());
+			result = new JSONArray(tokener);
+			br.close();
+			for (int i = 0; i < result.length(); i++) {
+				Tweet tweet = new Tweet();
+				tweet.setTitle(result.getJSONObject(i).getString("title"));
+				tweet.setBody(result.getJSONObject(i).getString("body"));
+				tweets.add(tweet);
 			}
 
 		} catch (Exception e) {
@@ -80,6 +65,55 @@ public class AsyncFetchTweets extends AsyncTask<Void, Void, List<Tweet>> {
 		}
 		return tweets;
 
+		/*
+		 * DefaultHttpClient
+		 */
+
+		// try {
+		// HttpClient client = new DefaultHttpClient();
+		// HttpGet httpGet = new HttpGet(tweetURL);
+		//
+		// HttpResponse response = client.execute(httpGet);
+		//
+		// BufferedReader br = new BufferedReader(new InputStreamReader(
+		// response.getEntity().getContent()));
+		// StringBuilder content = new StringBuilder();
+		// String line = null;
+		//
+		// while ((line = br.readLine()) != null) {
+		// content.append(line + "\n");
+		// }
+		//
+		// Log.d(TAG, content.toString());
+		//
+		// JSONTokener tokener = new JSONTokener(content.toString());
+		// result = new JSONArray(tokener);
+		//
+		// Log.d(TAG, result.toString());
+		//
+		// br.close();
+		// client.getConnectionManager().shutdown();
+		//
+		// for (int i = 0; i < result.length(); i++) {
+		// Tweet tweet = new Tweet();
+		// Log.d(TAG, result.getJSONObject(i).getString("title"));
+		// tweet.setTitle(result.getJSONObject(i).getString("title"));
+		// tweet.setBody(result.getJSONObject(i).getString("body"));
+		// tweets.add(tweet);
+		// }
+		//
+		// } catch (ClientProtocolException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// } catch (JSONException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		//
+		// return tweets;
 	}
 
 	protected void onPostExecute(List<Tweet> tweets) {
