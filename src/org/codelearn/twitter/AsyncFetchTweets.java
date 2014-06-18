@@ -30,7 +30,7 @@ public class AsyncFetchTweets extends AsyncTask<Void, Void, List<Tweet>> {
 	private List<Tweet> tweets = new ArrayList<Tweet>();
 	private TweetListActivity listActivity = null;
 	private JSONArray result;
-	private static final String tweetURL = "http://for-sahil.herokuapp.com/tweets";
+	private static final String tweetURL = "http://app-dev-challenge-endpoint.herokuapp.com/tweets";
 
 	public AsyncFetchTweets(TweetListActivity act) {
 		listActivity = act;
@@ -44,9 +44,9 @@ public class AsyncFetchTweets extends AsyncTask<Void, Void, List<Tweet>> {
 
 		try {
 
-			SharedPreferences prefs = listActivity.getSharedPreferences(
-					"codelearn_twitter", listActivity.MODE_PRIVATE);
-			String token = prefs.getString("token", "-1");
+			// SharedPreferences prefs = listActivity.getSharedPreferences(
+			// "codelearn_twitter", listActivity.MODE_PRIVATE);
+			// String token = prefs.getString("token", "-1");
 
 			URL url = new URL(tweetURL);
 
@@ -56,18 +56,17 @@ public class AsyncFetchTweets extends AsyncTask<Void, Void, List<Tweet>> {
 
 			BufferedReader br = new BufferedReader(new InputStreamReader(
 					con.getInputStream()));
-			StringBuilder content = new StringBuilder();
+			StringBuilder sb = new StringBuilder();
 			String line;
 			while ((line = br.readLine()) != null) {
-				content.append(line + "\n");
+				sb.append(line + "\n");
 			}
 
-			JSONTokener tokener = new JSONTokener(content.toString());
+			JSONTokener tokener = new JSONTokener(sb.toString());
 			result = new JSONArray(tokener);
 			br.close();
 			for (int i = 0; i < result.length(); i++) {
 				Tweet tweet = new Tweet();
-				Log.d(TAG, result.getJSONObject(i).getString("title"));
 				tweet.setTitle(result.getJSONObject(i).getString("title"));
 				tweet.setBody(result.getJSONObject(i).getString("body"));
 				tweets.add(tweet);
